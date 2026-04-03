@@ -8,9 +8,13 @@ const { JWT } = require('../config/constants');
 // ========================
 // Google OAuth
 // ========================
-router.get('/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
+router.get('/google', (req, res, next) => {
+  // Capture where the user logged in from and save it
+  const referer = req.headers.referer || 'http://localhost:5173';
+  const frontendUrl = new URL(referer).origin;
+  res.cookie('frontend_url', frontendUrl, { httpOnly: true, maxAge: 10 * 60 * 1000 });
+  next();
+}, passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',
   passport.authenticate('google', { session: false, failureRedirect: '/login' }),
@@ -26,7 +30,8 @@ router.get('/google/callback',
     });
 
     // Redirect to frontend profile page
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5174';
+    const clientUrl = req.cookies.frontend_url || process.env.CLIENT_URL || 'http://localhost:5173';
+    res.clearCookie('frontend_url');
     res.redirect(`${clientUrl}/profile?token=${token}`);
   }
 );
@@ -34,9 +39,12 @@ router.get('/google/callback',
 // ========================
 // GitHub OAuth
 // ========================
-router.get('/github',
-  passport.authenticate('github', { scope: ['user:email'] })
-);
+router.get('/github', (req, res, next) => {
+  const referer = req.headers.referer || 'http://localhost:5173';
+  const frontendUrl = new URL(referer).origin;
+  res.cookie('frontend_url', frontendUrl, { httpOnly: true, maxAge: 10 * 60 * 1000 });
+  next();
+}, passport.authenticate('github', { scope: ['user:email'] }));
 
 router.get('/github/callback',
   passport.authenticate('github', { session: false, failureRedirect: '/login' }),
@@ -50,7 +58,8 @@ router.get('/github/callback',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    const clientUrl = process.env.CLIENT_URL;
+    const clientUrl = req.cookies.frontend_url || process.env.CLIENT_URL || 'http://localhost:5173';
+    res.clearCookie('frontend_url');
     res.redirect(`${clientUrl}/profile?token=${token}`);
   }
 );
