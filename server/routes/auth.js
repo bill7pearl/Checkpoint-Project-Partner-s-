@@ -26,7 +26,8 @@ router.get('/google/callback',
     });
 
     // Redirect to frontend profile page
-    res.redirect(`http://localhost:5174/profile?token=${token}`);
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5174';
+    res.redirect(`${clientUrl}/profile?token=${token}`);
   }
 );
 
@@ -49,7 +50,8 @@ router.get('/github/callback',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    res.redirect(`http://localhost:5174/profile?token=${token}`);
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5174';
+    res.redirect(`${clientUrl}/profile?token=${token}`);
   }
 );
 
