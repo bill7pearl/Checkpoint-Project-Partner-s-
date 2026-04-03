@@ -50,7 +50,7 @@ router.get('/github/callback',
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5174';
+    const clientUrl = process.env.CLIENT_URL;
     res.redirect(`${clientUrl}/profile?token=${token}`);
   }
 );
