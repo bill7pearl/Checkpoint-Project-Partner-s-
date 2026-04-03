@@ -33,12 +33,15 @@ export function AuthProvider({ children }) {
     loadUser();
   }, []);
 
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const API_URL = import.meta.env.VITE_API_URL || (isLocal ? 'http://localhost:5000/api' : 'https://perfumehub-api.onrender.com/api');
+
   const loginWithGoogle = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/google`;
+    window.location.href = `${API_URL}/auth/google`;
   };
 
   const loginWithGithub = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/github`;
+    window.location.href = `${API_URL}/auth/github`;
   };
 
   const logout = async () => {
